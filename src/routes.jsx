@@ -5,6 +5,8 @@ import roleRoutes from "@/role/routes";
 import staticPageRoutes from "@/staticPage/routes";
 import homeRoutes from "@/home/routes";
 import eBookDisplayRoutes from "./eBookDisplay/routes";
+import wishlistManagementRoutes from "./wishlistManagement/routes";
+import reviewManagementRoutes from "./reviewManagement/routes";
 
 const GlobalRoutes = () => {
   const router = useRoutes([
@@ -13,7 +15,10 @@ const GlobalRoutes = () => {
 	...userRoutes,
 	...roleRoutes,
 	...homeRoutes,
-	...eBookDisplayRoutes 
+	...eBookDisplayRoutes,
+	...wishlistManagementRoutes,
+	...userRoutes,
+	...reviewManagementRoutes,
   ])
   return router
 }

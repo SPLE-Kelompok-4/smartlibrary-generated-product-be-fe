@@ -1,5 +1,5 @@
 /*
-	Generated on 02/05/2025 by UI Generator PRICES-IDE
+	Generated on 08/05/2025 by UI Generator PRICES-IDE
 	https://amanah.cs.ui.ac.id/research/ifml-regen
 	version 3.9.0
 */
@@ -43,7 +43,7 @@ const FormAddEBook = ({
   
   const navigate = useNavigate()
   
-  const onSubmitEvent = (data) => {
+  const tambahBuku = (data) => {
     const cleanData = cleanFormData(data)
     saveEBook({
       ...cleanData,
@@ -63,7 +63,7 @@ const FormAddEBook = ({
 	<div>
 	  <Layouts.FormComponentLayout
 		  title="Add EBook" 
-		  onSubmit={handleSubmit(onSubmitEvent)}
+		  onSubmit={handleSubmit(tambahBuku)}
 	
 	    vas={[
 		  ]}
@@ -157,7 +157,7 @@ const FormAddEBook = ({
 		  ]}
 	
 		  itemsEvents={[
-				<Button key="OnSubmit Event" type="submit" variant="primary">OnSubmit Event</Button>
+				<Button key="Tambah Buku" type="submit" variant="primary">Tambah Buku</Button>
 	    ]}
 	  />
 	    
