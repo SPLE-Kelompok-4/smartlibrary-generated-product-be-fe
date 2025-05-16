@@ -19,14 +19,12 @@ const Navbar = React.memo(function Navbar() {
           {navbarMenus.map((menu) => (
             <NavbarItem {...menu} key={menu.label} checkPermission={checkPermission} />
           ))}
-          {!isAuthenticated && (
-            <Link
+          <Link
               to={"/login"}
               className="btn btn-primary bg-base-100 text-base-content hover:text-base-primary"
             >
               Masuk
             </Link>
-          )}
         </div>
       )}
       {isAuthenticated && (
