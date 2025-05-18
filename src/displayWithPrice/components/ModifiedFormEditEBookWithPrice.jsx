@@ -3,7 +3,7 @@
   https://amanah.cs.ui.ac.id/research/ifml-regen
   version 3.9.0
 */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import {
@@ -13,90 +13,63 @@ import {
 } from "@/commons/components";
 import cleanFormData from "@/commons/utils/cleanFormData";
 import saveEBook from '../services/saveEBook';
-import { notifyError, notifySuccess} from "@/commons/utils/toaster";
+import { notifyError, notifySuccess } from "@/commons/utils/toaster";
 import * as Layouts from "@/commons/layouts";
 
-const ModifiedFormAddEBookWithImage = () => {
+const ModifiedFormEditEBookWithPrice = ({ 
+  eBookData,
+  isLoading
+}) => {
   const { 
     control, 
     handleSubmit,
-    watch,
+    reset
   } = useForm();
   
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null);
   
-  // Watch for image changes to create preview
-  const imageValue = watch("image");
-  
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Create a preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
+  // Initialize form with eBook data when it's loaded
+  useEffect(() => {
+    if (eBookData) {
+      reset(eBookData);
     }
-  };
+  }, [eBookData, reset]);
   
-  const addEBook = (data) => {
+  const updateEBook = (data) => {
     setIsSubmitting(true);
     const cleanData = cleanFormData(data);
     
-    // Handle image file upload if needed
-    if (data.image && data.image.length > 0) {
-      // Create FormData for file upload
-      const formData = new FormData();
-      
-      // Add all form fields to formData
-      Object.keys(cleanData).forEach(key => {
-        if (key === 'image') {
-          formData.append('image', data.image[0]);
-        } else {
-          formData.append(key, cleanData[key]);
-        }
+    saveEBook({
+      ...cleanData,
+      id: eBookData.id // Ensure we're updating the correct eBook
+    })
+      .then(() => {
+        navigate(`/ebook-price`);
+        notifySuccess(`EBook updated successfully!`);
+      })
+      .catch((error) => {
+        console.error(error);
+        notifyError("Failed to update eBook");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-      
-      // Send formData instead of JSON
-      saveEBook(formData)
-        .then(() => {
-          navigate(`/ebook-image`);
-          notifySuccess(`EBook added successfully!`);
-        })
-        .catch((error) => {
-          console.error(error);
-          notifyError("Failed to add eBook");
-        })
-        .finally(() => {
-          setIsSubmitting(false);
-        });
-    } else {
-      // Regular JSON submission without file
-      saveEBook(cleanData)
-        .then(() => {
-          navigate(`/ebook-image`);
-          notifySuccess(`EBook added successfully!`);
-        })
-        .catch((error) => {
-          console.error(error);
-          notifyError("Failed to add eBook");
-        })
-        .finally(() => {
-          setIsSubmitting(false);
-        });
-    }
   };
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
   
   return (
     <div>
       <Layouts.FormComponentLayout
-        title="Add EBook With Image" 
-        onSubmit={handleSubmit(addEBook)}
+        title="Edit EBook With Price" 
+        onSubmit={handleSubmit(updateEBook)}
         vas={[]}
         formFields={[
           <Controller
@@ -179,52 +152,35 @@ const ModifiedFormAddEBookWithImage = () => {
           />,
           
           <Controller
-            key="image"
-            name="image"
+            key="price"
+            name="price"
             control={control}
-            rules={{ required: "Please upload an image" }} 
-            render={({ field: { onChange, value, ...field }, fieldState }) => (
-              <div className="mb-4">
-                <InputField
-                  label="Cover Image"
-                  type="file"
-                  accept="image/*"
-                  placeholder="Upload cover image"
-                  fieldState={fieldState}
-                  onChange={(e) => {
-                    onChange(e.target.files);
-                    handleImageChange(e);
-                  }}
-                  {...field}
-                  isRequired={true}
-                />
-                {imagePreview && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600 mb-1">Image Preview:</p>
-                    <img 
-                      src={imagePreview} 
-                      alt="Cover preview" 
-                      className="h-48 object-contain border rounded"
-                    />
-                  </div>
-                )}
-              </div>
+            rules={{ required: "Please enter eBook price" }} 
+            render={({ field, fieldState }) => (
+              <InputField
+                label="EBook Price"
+                placeholder="Enter eBook price"
+                type="number"
+                fieldState={fieldState}
+                {...field}
+                isRequired={true}
+              />
             )}
           />,
         ]}
         itemsEvents={[
           <Button 
-            key="Submit" 
+            key="Update" 
             type="submit" 
             variant="primary" 
             disabled={isSubmitting}
           >
-            {isSubmitting ? <Spinner size="sm" /> : "Add eBook"}
+            {isSubmitting ? <Spinner size="sm" /> : "Update eBook"}
           </Button>,
           <Button 
             key="Cancel" 
             variant="secondary" 
-            onClick={() => navigate('/ebook-image')}
+            onClick={() => navigate('/ebook-price')}
             disabled={isSubmitting}
           >
             Cancel
@@ -235,4 +191,4 @@ const ModifiedFormAddEBookWithImage = () => {
   );
 };
 
-export default ModifiedFormAddEBookWithImage;
+export default ModifiedFormEditEBookWithPrice;
