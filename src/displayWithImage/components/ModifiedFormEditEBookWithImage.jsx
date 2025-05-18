@@ -3,7 +3,7 @@
   https://amanah.cs.ui.ac.id/research/ifml-regen
   version 3.9.0
 */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import {
@@ -13,19 +13,31 @@ import {
 } from "@/commons/components";
 import cleanFormData from "@/commons/utils/cleanFormData";
 import saveEBook from '../services/saveEBook';
-import { notifyError, notifySuccess} from "@/commons/utils/toaster";
+import { notifyError, notifySuccess } from "@/commons/utils/toaster";
 import * as Layouts from "@/commons/layouts";
 
-const ModifiedFormAddEBookWithImage = () => {
+const ModifiedFormEditEBookWithImage = ({ 
+  eBookData,
+  isLoading
+}) => {
   const { 
     control, 
     handleSubmit,
+    reset,
     watch,
   } = useForm();
   
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState(eBookData?.image || null);
+  
+  // Initialize form with eBook data when it's loaded
+  useEffect(() => {
+    if (eBookData) {
+      reset(eBookData);
+      setImagePreview(eBookData.image);
+    }
+  }, [eBookData, reset]);
   
   // Watch for image changes to create preview
   const imageValue = watch("image");
@@ -39,12 +51,10 @@ const ModifiedFormAddEBookWithImage = () => {
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
     }
   };
   
-  const addEBook = (data) => {
+  const updateEBook = (data) => {
     setIsSubmitting(true);
     const cleanData = cleanFormData(data);
     
@@ -62,29 +72,36 @@ const ModifiedFormAddEBookWithImage = () => {
         }
       });
       
+      // Ensure we're updating the correct eBook
+      formData.append('id', eBookData.id);
+      
       // Send formData instead of JSON
       saveEBook(formData)
         .then(() => {
           navigate(`/ebook-image`);
-          notifySuccess(`EBook added successfully!`);
+          notifySuccess(`EBook updated successfully!`);
         })
         .catch((error) => {
           console.error(error);
-          notifyError("Failed to add eBook");
+          notifyError("Failed to update eBook");
         })
         .finally(() => {
           setIsSubmitting(false);
         });
     } else {
-      // Regular JSON submission without file
-      saveEBook(cleanData)
+      // Regular JSON submission without new file, but include existing image
+      saveEBook({
+        ...cleanData,
+        id: eBookData.id,
+        image: eBookData.image // Keep existing image
+      })
         .then(() => {
           navigate(`/ebook-image`);
-          notifySuccess(`EBook added successfully!`);
+          notifySuccess(`EBook updated successfully!`);
         })
         .catch((error) => {
           console.error(error);
-          notifyError("Failed to add eBook");
+          notifyError("Failed to update eBook");
         })
         .finally(() => {
           setIsSubmitting(false);
@@ -92,11 +109,19 @@ const ModifiedFormAddEBookWithImage = () => {
     }
   };
   
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+  
   return (
     <div>
       <Layouts.FormComponentLayout
-        title="Add EBook With Image" 
-        onSubmit={handleSubmit(addEBook)}
+        title="Edit EBook With Image" 
+        onSubmit={handleSubmit(updateEBook)}
         vas={[]}
         formFields={[
           <Controller
@@ -182,25 +207,24 @@ const ModifiedFormAddEBookWithImage = () => {
             key="image"
             name="image"
             control={control}
-            rules={{ required: "Please upload an image" }} 
             render={({ field: { onChange, value, ...field }, fieldState }) => (
               <div className="mb-4">
                 <InputField
                   label="Cover Image"
                   type="file"
                   accept="image/*"
-                  placeholder="Upload cover image"
+                  placeholder="Upload new cover image"
                   fieldState={fieldState}
                   onChange={(e) => {
                     onChange(e.target.files);
                     handleImageChange(e);
                   }}
                   {...field}
-                  isRequired={true}
+                  isRequired={false}
                 />
                 {imagePreview && (
                   <div className="mt-2">
-                    <p className="text-sm text-gray-600 mb-1">Image Preview:</p>
+                    <p className="text-sm text-gray-600 mb-1">Current Image:</p>
                     <img 
                       src={imagePreview} 
                       alt="Cover preview" 
@@ -214,12 +238,12 @@ const ModifiedFormAddEBookWithImage = () => {
         ]}
         itemsEvents={[
           <Button 
-            key="Submit" 
+            key="Update" 
             type="submit" 
             variant="primary" 
             disabled={isSubmitting}
           >
-            {isSubmitting ? <Spinner size="sm" /> : "Add eBook"}
+            {isSubmitting ? <Spinner size="sm" /> : "Update eBook"}
           </Button>,
           <Button 
             key="Cancel" 
@@ -235,4 +259,4 @@ const ModifiedFormAddEBookWithImage = () => {
   );
 };
 
-export default ModifiedFormAddEBookWithImage;
+export default ModifiedFormEditEBookWithImage;
