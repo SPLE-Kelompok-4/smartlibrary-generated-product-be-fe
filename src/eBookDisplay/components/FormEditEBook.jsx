@@ -1,9 +1,9 @@
 /*
-  Generated on 08/05/2025 by UI Generator PRICES-IDE
-  https://amanah.cs.ui.ac.id/research/ifml-regen
-  version 3.9.0
+    Generated on 08/05/2025 by UI Generator PRICES-IDE
+    https://amanah.cs.ui.ac.id/research/ifml-regen
+    version 3.9.0
 */
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import {
@@ -14,52 +14,68 @@ import {
 } from "@/commons/components";
 import cleanFormData from "@/commons/utils/cleanFormData";
 import saveEBook from '../services/saveEBook';
-import { notifyError, notifySuccess} from "@/commons/utils/toaster";
+import { notifyError, notifySuccess } from "@/commons/utils/toaster";
 import * as Layouts from "@/commons/layouts";
 
-const ModifiedFormAddEBookWithPrice = () => {
+const FormEditEBook = ({ 
+  eBookData,
+  isLoading
+}) => {
   const { 
     control, 
     handleSubmit,
+    reset
   } = useForm();
   
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const addEBook = (data) => {
-    setIsSubmitting(true);
+  // Initialize form with eBook data when it's loaded
+  useEffect(() => {
+    if (eBookData) {
+      reset(eBookData);
+    }
+  }, [eBookData, reset]);
+  
+  const updateEBook = (data) => {
     const cleanData = cleanFormData(data);
-    
-    saveEBook(cleanData)
-      .then(() => {
-        navigate(`/ebook-price`);
-        notifySuccess(`EBook added successfully!`);
-      })
-      .catch((error) => {
-        console.error(error);
-        notifyError("Failed to add eBook");
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+    saveEBook({
+      ...cleanData,
+      id: eBookData.id // Ensure we're updating the correct eBook
+    })
+    .then(({ data: { data } }) => {
+      navigate(`/ebook`);
+      notifySuccess(`EBook updated successfully!`);
+    })
+    .catch((error) => {
+      console.error(error);
+      notifyError(error);
+    });
   };
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
   
   return (
     <div>
       <Layouts.FormComponentLayout
-        title="Add EBook With Price" 
-        onSubmit={handleSubmit(addEBook)}
+        title="Edit EBook" 
+        onSubmit={handleSubmit(updateEBook)}
         vas={[]}
         formFields={[
           <Controller
             key="eBookTitle"
             name="eBookTitle"
             control={control}
-            rules={{ required: "Please enter eBook title" }} 
+            rules={{ required: "Harap masukkan ebook title" }} 
             render={({ field, fieldState }) => (
               <InputField
                 label="EBook Title"
-                placeholder="Enter eBook title"
+                placeholder="Masukkan ebook title"
                 fieldState={fieldState}
                 {...field}
                 isRequired={true}
@@ -71,11 +87,11 @@ const ModifiedFormAddEBookWithPrice = () => {
             key="eBookAuthor"
             name="eBookAuthor"
             control={control}
-            rules={{ required: "Please enter eBook author" }} 
+            rules={{ required: "Harap masukkan ebook author" }} 
             render={({ field, fieldState }) => (
               <InputField
                 label="EBook Author"
-                placeholder="Enter eBook author"
+                placeholder="Masukkan ebook author"
                 fieldState={fieldState}
                 {...field}
                 isRequired={true}
@@ -87,11 +103,11 @@ const ModifiedFormAddEBookWithPrice = () => {
             key="iSBN"
             name="iSBN"
             control={control}
-            rules={{ required: "Please enter eBook ISBN" }} 
+            rules={{ required: "Harap masukkan ebook isbn" }} 
             render={({ field, fieldState }) => (
               <InputField
                 label="EBook ISBN"
-                placeholder="Enter eBook ISBN"
+                placeholder="Masukkan ebook isbn"
                 fieldState={fieldState}
                 {...field}
                 isRequired={true}
@@ -105,8 +121,8 @@ const ModifiedFormAddEBookWithPrice = () => {
             control={control}
             render={({ field, fieldState }) => (
               <InputField
-                label="EBook Description"
-                placeholder="Enter eBook description"
+                label="EBook description"
+                placeholder="Masukkan ebook description"
                 fieldState={fieldState}
                 {...field}
                 isRequired={false}
@@ -121,7 +137,7 @@ const ModifiedFormAddEBookWithPrice = () => {
             render={({ field, fieldState }) => (
               <InputField
                 label="EBook Release Date"
-                placeholder="Enter eBook release date"
+                placeholder="Masukkan ebook release date"
                 type="date"
                 fieldState={fieldState}
                 {...field}
@@ -129,38 +145,13 @@ const ModifiedFormAddEBookWithPrice = () => {
               />
             )}
           />,
-          
-          <Controller
-            key="price"
-            name="price"
-            control={control}
-            rules={{ required: "Please enter eBook price" }} 
-            render={({ field, fieldState }) => (
-              <InputField
-                label="EBook Price"
-                placeholder="Enter eBook price"
-                type="number"
-                fieldState={fieldState}
-                {...field}
-                isRequired={true}
-              />
-            )}
-          />,
         ]}
         itemsEvents={[
-          <Button 
-            key="Submit" 
-            type="submit" 
-            variant="primary" 
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? <Spinner size="sm" /> : "Add eBook"}
-          </Button>,
+          <Button key="Update" type="submit" variant="primary">Update EBook</Button>,
           <Button 
             key="Cancel" 
             variant="secondary" 
-            onClick={() => navigate('/ebook-price')}
-            disabled={isSubmitting}
+            onClick={() => navigate('/ebook')}
           >
             Cancel
           </Button>
@@ -170,4 +161,4 @@ const ModifiedFormAddEBookWithPrice = () => {
   );
 };
 
-export default ModifiedFormAddEBookWithPrice;
+export default FormEditEBook;
