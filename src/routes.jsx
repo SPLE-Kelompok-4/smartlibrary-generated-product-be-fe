@@ -7,7 +7,7 @@ import homeRoutes from "@/home/routes";
 import eBookDisplayRoutes from "./eBookDisplay/routes";
 import wishlistManagementRoutes from "./wishlistManagement/routes";
 import reviewManagementRoutes from "./reviewManagement/routes";
-import communityContentRoutes from "./communityContent/routes";
+import articleRoutes from "./article/routes";
 
 const GlobalRoutes = () => {
   const router = useRoutes([
@@ -20,7 +20,7 @@ const GlobalRoutes = () => {
 	...wishlistManagementRoutes,
 	...userRoutes,
 	...reviewManagementRoutes,
-	...communityContentRoutes,
+	...articleRoutes,
   ])
   return router
 }
