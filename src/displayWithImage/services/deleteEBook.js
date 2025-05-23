@@ -6,7 +6,7 @@ const deleteEBook = (id) => {
   const { getToken } = tokenManager();
   const token = getToken();
   
-  return axios.delete(`${environment.rootApi}/call/ebook/delete/${id}`, {
+  return axios.delete(`${environment.rootApi}/call/displaywithimage/delete/${id}`, {
     params: { token },
     headers: {
       'Authorization': token,

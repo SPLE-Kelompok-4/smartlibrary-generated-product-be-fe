@@ -21,7 +21,7 @@ const GlobalRoutes = () => {
     ...homeRoutes,
     ...eBookDisplayRoutes,
     ...displayWithImageRoutes,
-	...displayWithPriceRoutes,
+	  ...displayWithPriceRoutes,
     ...wishlistManagementRoutes,
     ...reviewManagementRoutes,
     ...communityContentRoutes,
