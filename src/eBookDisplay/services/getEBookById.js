@@ -7,7 +7,7 @@ const getEBookById = (id) => {
   const { getToken } = tokenManager();
   const token = getToken();
   
-  return axios.get(`${environment.rootApi}/call/ebook/${id}`, {
+  return axios.get(`${environment.rootApi}/call/ebookdisplay/${id}`, {
     params: { token },
     headers: {
       'Authorization': token,

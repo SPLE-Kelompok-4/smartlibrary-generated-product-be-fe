@@ -17,7 +17,7 @@ const saveEBook = (data = {}) => {
   }
   
   return axios.post(
-    `${environment.rootApi}/call/ebook/save`, 
+    `${environment.rootApi}/call/displaywithimage/save`, 
     data,
     {
       params: { token },

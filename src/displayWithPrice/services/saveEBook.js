@@ -9,7 +9,7 @@ const saveEBook = (data = {}) => {
 	const { getToken } = tokenManager();
 	const token = getToken();
 	
-	return axios.post(`${environment.rootApi}/call/ebook/save`, body,
+	return axios.post(`${environment.rootApi}/call/displaywithprice/save`, body,
 	{
 		params: { token },
 		

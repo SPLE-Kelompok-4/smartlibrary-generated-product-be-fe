@@ -7,7 +7,7 @@ const getListEBook = (params = {}) => {
   const { getToken } = tokenManager();
   const token = getToken();
   let paramsGet = Object.assign(params, {token});
-  return axios.get(`${environment.rootApi}/call/ebook/list`, {
+  return axios.get(`${environment.rootApi}/call/displaywithimage/list`, {
     params: paramsGet,    
     headers: {
       'Authorization': token,
