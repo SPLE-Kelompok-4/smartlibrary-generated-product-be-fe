@@ -9,6 +9,7 @@ import displayWithImageRoutes from "./displayWithImage/routes";
 import displayWithPriceRoutes from "./displayWithPrice/routes";
 import wishlistManagementRoutes from "./wishlistManagement/routes";
 import reviewManagementRoutes from "./reviewManagement/routes";
+import articleRoutes from "./article/routes";
 import communityContentRoutes from "./communityContent/routes";
 
 const GlobalRoutes = () => {
@@ -24,6 +25,7 @@ const GlobalRoutes = () => {
     ...wishlistManagementRoutes,
     ...reviewManagementRoutes,
     ...communityContentRoutes,
+	...articleRoutes,
   ])
   return router
 }
