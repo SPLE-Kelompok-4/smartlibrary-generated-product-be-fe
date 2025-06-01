@@ -7,7 +7,8 @@ const getWishlistItem = (params = {}) => {
 	const { getToken } = tokenManager();
 	const token = getToken();
 	let paramsGet = Object.assign(params, {token});
-	return axios.get(`${environment.rootApi}/call/wishlistmanagement/list`, {
+	console.log(`${environment.rootApi}/call/wishlistitem/list`)
+	return axios.get(`${environment.rootApi}/call/wishlistitem/list`, {
 		params: paramsGet,		
 		headers: {
 			'Authorization': token,
